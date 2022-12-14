@@ -1,0 +1,31 @@
+#TD4
+
+name: Linux_Container_Workflow
+
+on: [push]
+
+
+jobs:
+    login-and-build:
+        runs-on: ubuntu-latest
+        steps:
+        # checkout the repo
+        - name: 'Checkout GitHub Action'
+          uses: actions/checkout@master
+          
+        - name: 'Login via Azure CLI'
+          uses: azure/login@v1
+          with:
+            creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    build-and-deploy:
+        runs-on: ubuntu-latest
+        steps:  
+        -  name: 'Deploy to Azure Container Instances'
+           uses: 'azure/aci-deploy@v1'
+           with:
+            resource-group: name-rg
+            dns-name-label: info-container
+            image: elmerzouki/sysinfo-api:0.0.2l #image docker hub
+            name: sys-container
+            location: 'france central'

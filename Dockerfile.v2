@@ -1,0 +1,22 @@
+#TD2 V2
+ # stage compilation
+FROM alpine:3.15 as builder
+WORKDIR /api
+RUN apk add --no-cache nodejs npm 
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+
+ # stage exécution
+FROM alpine:3.15 as runner
+WORKDIR /api
+RUN apk add --no-cache nodejs
+RUN adduser -D alghamdi
+COPY --from=builder --chown=alghamdi:alghamdi /api/node_modules ./node_modules
+COPY --from=builder --chown=alghamdi:alghamdi /api/dist ./dist
+USER alghamdi
+
+ # exécution
+CMD ["node", "dist/index.js"]

@@ -1,0 +1,30 @@
+#TD2 V1
+
+ # image de départ
+FROM alpine:3.15
+
+ # chemin de travail
+WORKDIR /api
+
+ # installation des paquets système
+RUN apk add --update nodejs npm procps
+
+# ajout utilisateur node et groupe node
+RUN adduser -D alghamdi
+
+ # copie des fichiers du dépôt
+COPY package*.json ./
+
+# installation des dépendances avec npm
+RUN npm install
+
+COPY . .
+
+ # build avec npm
+RUN npm run build
+
+ # downgrade des privilèges
+USER alghamdi
+
+ # exécution
+CMD ["npm", "start"]
